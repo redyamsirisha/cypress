@@ -1,26 +1,38 @@
 pipeline {
-    agent {
-        docker {
-            image 'cypress/base:12.16.1' 
-            args '-p 3000:3000' 
-        }
-    }
-    stages {
-        stage('Install Dependencies') { 
-            steps {
-                sh 'npm ci'
-                sh 'npm run cy:verify'
-            }
-        }
-        stage('Build') { 
-            steps {
-                sh 'npm run build'
-            }
-        }
-        stage('Test') { 
-            steps {
-                sh 'npm run ci:cy-run'
-            }
-        }
-    }
+   agent any
+
+   tools {nodejs "Node12"}
+
+   environment {
+       CHROME_BIN = '/bin/google-chrome'
+      
+   }
+
+   stages {
+       stage('Dependencies') {
+           steps {
+               sh 'npm i'
+           }
+       }
+       stage('e2e Tests') {
+         Parallel{
+             stage('Test 1') {
+                  steps {
+                sh 'npm run cypress:ci'
+                  }
+               }
+             
+             stage('Test 2') {
+                  steps {
+                sh 'npm run cypress2:ci'
+                  }
+               }
+
+       }
+       stage('Deploy') {
+           steps {
+               echo 'Deploying....'
+           }
+       }
+   }
 }
