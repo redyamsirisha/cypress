@@ -1,26 +1,25 @@
 pipeline {
-  agent any
-    
-  tools {nodejs "node"}
-    
+  agent {
+    // this image provides everything needed to run Cypress
+    docker {
+      image 'cypress/base:18.14.1'
+    }
+  }
+
   stages {
-        
-    stage('Cloning Git') {
+    stage('build and test') {
+      environment {
+        // we will be recording test results and video on Cypress dashboard
+        // to record we need to set an environment variable
+        // we can load the record key variable from credentials store
+        // see https://jenkins.io/doc/book/using/using-credentials/
+        CYPRESS_RECORD_KEY = credentials('cypress-example-kitchensink-record-key')
+      }
+
       steps {
-        sh 'cd cypress'
+        sh 'npm ci'
+        sh "npm run test:ci:record"
       }
     }
-        
-    stage('Install dependencies') {
-      steps {
-        sh 'npm install'
-      }
-    }
-     
-    stage('Test') {
-      steps {
-         sh 'npm run testsmokechrome'
-      }
-    }      
   }
 }
