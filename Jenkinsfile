@@ -7,6 +7,10 @@ pipeline {
   }
 
   stages {
+     stage('Initialize'){
+        def dockerHome = tool 'myDocker'
+        env.PATH = "${dockerHome}/bin:${env.PATH}"
+    }
     stage('build and test') {
       environment {
         // we will be recording test results and video on Cypress dashboard
