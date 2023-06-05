@@ -1,7 +1,6 @@
 pipeline{
     agent {
         dockerfile {
-            label 'linux'
             filename 'Dockerfile'
             args '-u root:root'
         }
